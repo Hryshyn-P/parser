@@ -1,16 +1,16 @@
-import { FileParserService } from '../src/services/parser/txt-parser.service';
+import { TxtParserService } from '../src/services/parser/txt.parser.service';
 
-describe('FileParserService', () => {
-  let fileParserService: FileParserService;
+describe('TxtParserService', () => {
+  let txtParserService: TxtParserService;
 
   beforeEach(() => {
-    fileParserService = new FileParserService();
+    txtParserService = new TxtParserService();
   });
 
   it('should parse file correctly', async () => {
     const testFile = 'test/export.txt';
 
-    const result = await fileParserService.parseFile(testFile);
+    const result = await txtParserService.parseFile(testFile);
 
     expect(result).toBeDefined();
     expect(typeof result === 'object' && result !== null).toBe(true);

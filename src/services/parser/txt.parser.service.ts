@@ -15,7 +15,7 @@ import {
 } from '../../dto/parser.dto';
 
 @Injectable()
-export class FileParserService {
+export class TxtParserService {
   private departments: Department[] = [];
   private employees: Employee[] = [];
   private rates: Rate[] = [];
@@ -210,6 +210,25 @@ export class FileParserService {
     } catch (error) {
       console.error(`Error while parsing file: ${error.message}`);
       throw error;
+    }
+  }
+
+  async findLatestFile(files: string[]): Promise<string> {
+    try {
+      let latestFile: string | undefined;
+      let latestTimestamp = 0;
+      for (const file of files) {
+        const filePath = path.join('./parsing-files/txt', file);
+        const fileStats = await fs.stat(filePath);
+        const timestamp = fileStats.mtimeMs;
+        if (timestamp > latestTimestamp) {
+          latestFile = file;
+          latestTimestamp = timestamp;
+        }
+      }
+      return latestFile;
+    } catch (err) {
+      console.error('Error loading latest file', err);
     }
   }
 }

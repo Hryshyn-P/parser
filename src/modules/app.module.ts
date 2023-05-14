@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { FileParserController } from '../controllers/parser.controller';
 import { AppBootstrapService } from '../services/bootstrap/bootstrap.service';
-import { FileParserService } from '../services/parser/txt-parser.service';
 import { DatabaseModule } from './db.module';
 import { DepartmentsModule } from './departments.module';
+import { TxtParserModule } from './txt.parser.module';
 
 @Module({
   imports: [
@@ -14,8 +13,9 @@ import { DepartmentsModule } from './departments.module';
     }),
     DatabaseModule,
     DepartmentsModule,
+    TxtParserModule,
   ],
-  controllers: [FileParserController],
-  providers: [FileParserService, AppBootstrapService],
+  controllers: [],
+  providers: [AppBootstrapService],
 })
 export class AppModule {}

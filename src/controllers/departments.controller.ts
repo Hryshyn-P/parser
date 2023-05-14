@@ -8,9 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { Department } from '../models/department.model';
-import { Rate } from '../models/rate.model';
 import { DepartmentService } from '../services/department.service';
-import { FileParserService } from '../services/parser/txt-parser.service';
 
 @Controller('departments')
 export class DepartmentController {
@@ -29,18 +27,6 @@ export class DepartmentController {
   @Post()
   async create(@Body() department: Department): Promise<Department> {
     return this.departmentService.create(department);
-  }
-
-  @Post('bulk-upsert')
-  async bulkUpsert(): Promise<{
-    departments: Department[];
-    rates: Rate[];
-  }> {
-    const fileParserService = new FileParserService();
-    const parsedData = await fileParserService.parseFile(
-      './parsing-files/txt/export.txt',
-    );
-    return this.departmentService.bulkUpsert(parsedData);
   }
 
   @Put(':id')
