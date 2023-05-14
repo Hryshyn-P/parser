@@ -4,6 +4,7 @@ import { AppBootstrapService } from '../services/bootstrap/bootstrap.service';
 import { DatabaseModule } from './db.module';
 import { DepartmentsModule } from './departments.module';
 import { TxtParserModule } from './txt.parser.module';
+import { EmployeeModule } from './employee.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TxtParserModule } from './txt.parser.module';
     DatabaseModule,
     DepartmentsModule,
     TxtParserModule,
+    EmployeeModule,
   ],
   controllers: [],
   providers: [AppBootstrapService],

@@ -6505,7 +6505,7 @@ E-List
       Statement
         id: 80707
         amount: 4740.75
-        date: Tue Dec 28 2021
+        date: Mon May 01 2023
 
 
     Donation
@@ -6520,8 +6520,8 @@ E-List
 
     Donation
       id: 31096
-      date: Thu Mar 04 2021
-      amount: 146.63 GBP
+      date: Mon May 01 2023
+      amount: 1460.63 GBP
 
 
   Employee
@@ -6593,7 +6593,7 @@ E-List
       Statement
         id: 60205
         amount: 6320.06
-        date: Tue Dec 28 2021
+        date: Mon May 01 2023
 
 
     Donation
@@ -6608,8 +6608,8 @@ E-List
 
     Donation
       id: 1387
-      date: Mon Mar 22 2021
-      amount: 252.81 GBP
+      date: Mon May 01 2023
+      amount: 2520.81 GBP
 
 
   Employee
