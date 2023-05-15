@@ -12,6 +12,8 @@ export class EmployeeService {
   constructor(
     @InjectModel(Employee)
     private employeeModel: typeof Employee,
+    @InjectModel(Department)
+    private departmentModel: typeof Department,
   ) {}
 
   async findAll(): Promise<Employee[]> {
@@ -121,5 +123,108 @@ export class EmployeeService {
     });
 
     return filteredEmployees;
+  }
+
+  async calculateRewardsAndFunds(): Promise<any[]> {
+    const rewards = [];
+
+    const employees = await this.employeeModel.findAll({
+      include: [
+        {
+          model: Donation,
+          as: 'donations',
+        },
+        {
+          model: Salary,
+          as: 'salary',
+          include: [
+            {
+              model: Statement,
+              as: 'statements',
+            },
+          ],
+        },
+        {
+          model: Department,
+          as: 'department',
+        },
+      ],
+    });
+
+    const totalDonations = employees
+      .flatMap((employee) => employee.donations)
+      .reduce((sum, donation) => sum + donation.amount, 0);
+
+    const eligibleEmployees = employees.filter(
+      (employee) => totalDonations >= 100 && employee.donations.length > 0,
+    );
+
+    const totalRewardsPool = 10000;
+
+    for (const employee of eligibleEmployees) {
+      const employeeDonations = employee.donations.reduce(
+        (sum, donation) => sum + donation.amount,
+        0,
+      );
+      const employeeRewardPercentage = employeeDonations / totalDonations;
+      let employeeReward = totalRewardsPool * employeeRewardPercentage;
+
+      if (employeeDonations >= 1000) {
+        const percentageIncrease = 0.2;
+        const additionalReward = totalRewardsPool * percentageIncrease;
+        employeeReward += additionalReward;
+      }
+
+      rewards.push({
+        employeeId: employee.id,
+        employeeReward: `${Math.floor(employeeReward)} $`,
+      });
+    }
+
+    const departments = await this.departmentModel.findAll({
+      include: [
+        {
+          model: Employee,
+          as: 'employees',
+          include: [
+            {
+              model: Donation,
+              as: 'donations',
+            },
+          ],
+        },
+      ],
+    });
+
+    const departmentWithHighestDonations = departments.reduce(
+      (maxDepartment, department) => {
+        const departmentDonations = department.employees
+          .flatMap((employee) => employee.donations)
+          .reduce((sum, donation) => sum + donation.amount, 0);
+        const maxDepartmentDonations = maxDepartment.employees
+          .flatMap((employee) => employee.donations)
+          .reduce((sum, donation) => sum + donation.amount, 0);
+        if (departmentDonations > maxDepartmentDonations) {
+          return department;
+        }
+        return maxDepartment;
+      },
+      departments[0],
+    );
+
+    for (const employee of departmentWithHighestDonations.employees) {
+      rewards.concat(
+        rewards
+          .filter((reward) => reward.employeeId === employee.id)
+          .map((reward) => {
+            reward.employeeReward = `${
+              parseInt(reward.employeeReward) + 100
+            } $`;
+            return reward;
+          }),
+      );
+    }
+
+    return rewards;
   }
 }

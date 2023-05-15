@@ -19,6 +19,11 @@ export class DepartmentController {
     return this.departmentService.findAll();
   }
 
+  @Get('salary-details')
+  async findDepartmentsWithSalaryDetails(): Promise<Department[]> {
+    return this.departmentService.findDepartmentsWithSalaryDetails();
+  }
+
   @Get(':id')
   async findById(@Param('id') id: number): Promise<Department> {
     return this.departmentService.findById(id);

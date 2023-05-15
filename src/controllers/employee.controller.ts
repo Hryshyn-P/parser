@@ -10,4 +10,9 @@ export class EmployeeController {
   async findEmployeesWithDonations(): Promise<Employee[]> {
     return this.employeeService.findEmployeesWithDonations();
   }
+
+  @Get('calculate-rewards-funds')
+  async calculateRewardsAndFunds(): Promise<any[]> {
+    return this.employeeService.calculateRewardsAndFunds();
+  }
 }
