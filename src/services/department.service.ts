@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Department } from '../models/department.model';
 import { Employee } from '../models/employee.model';
-import { Salary } from '../models/salary.model';
-import { Statement } from '../models/statement.model';
+import { QueryTypes } from 'sequelize';
 
 @Injectable()
 export class DepartmentService {
@@ -11,6 +10,24 @@ export class DepartmentService {
     @InjectModel(Department)
     private readonly departmentModel: typeof Department,
   ) {}
+
+  /**
+    Display departments in descending order of the difference
+    between the maximum and minimum average annual salary.
+    For each department, show up to 3 employees with the highest percentage
+    increase in salary for the year and the size of their last salary.
+  */
+  async findDepartmentsWithSalaryDetails(): Promise<Department[]> {
+    const departments: Department[] =
+      await this.departmentModel.sequelize.query(
+        `SELECT * FROM find_departments_with_salary_details()
+  `,
+        {
+          type: QueryTypes.SELECT,
+        },
+      );
+    return departments[0]['find_departments_with_salary_details'];
+  }
 
   async findAll(): Promise<Department[]> {
     return this.departmentModel.findAll({
@@ -42,66 +59,5 @@ export class DepartmentService {
     await this.departmentModel.destroy({
       where: { id },
     });
-  }
-
-  async findDepartmentsWithSalaryDetails(): Promise<Department[]> {
-    const departments = await this.departmentModel.findAll({
-      include: [
-        {
-          model: Employee,
-          as: 'employees',
-          include: [
-            {
-              model: Salary,
-              as: 'salary',
-              include: [
-                {
-                  model: Statement,
-                  as: 'statements',
-                  order: [['date', 'DESC']],
-                  limit: 1,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
-
-    departments.forEach((department) => {
-      department.employees.sort((a, b) => {
-        const percentIncreaseA =
-          (a.salary.statements[0]?.amount - a.salary.statements[0]?.amount) /
-          a.salary.statements[0]?.amount;
-        const percentIncreaseB =
-          (b.salary.statements[0]?.amount - b.salary.statements[0]?.amount) /
-          b.salary.statements[0]?.amount;
-        return percentIncreaseB - percentIncreaseA;
-      });
-
-      department.employees = department.employees.slice(0, 3);
-    });
-
-    departments.sort((a, b) => {
-      const maxSalaryA = Math.max(
-        ...a.employees.map((employee) => employee.salary.statements[0]?.amount),
-      );
-      const minSalaryA = Math.min(
-        ...a.employees.map((employee) => employee.salary.statements[0]?.amount),
-      );
-      const maxSalaryB = Math.max(
-        ...b.employees.map((employee) => employee.salary.statements[0]?.amount),
-      );
-      const minSalaryB = Math.min(
-        ...b.employees.map((employee) => employee.salary.statements[0]?.amount),
-      );
-
-      const diffA = maxSalaryA - minSalaryA;
-      const diffB = maxSalaryB - minSalaryB;
-
-      return diffB - diffA;
-    });
-
-    return departments;
   }
 }

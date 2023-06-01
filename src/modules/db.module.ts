@@ -7,6 +7,7 @@ import { Employee } from '../models/employee.model';
 import { Rate } from '../models/rate.model';
 import { Salary } from '../models/salary.model';
 import { Statement } from '../models/statement.model';
+import { AppBootstrapService } from '../services/bootstrap/bootstrap.service';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { Statement } from '../models/statement.model';
       models: [Department, Donation, Employee, Rate, Salary, Statement],
       autoLoadModels: true,
       synchronize: true,
-      // sync: { force: true },
     }),
   ],
+  providers: [AppBootstrapService],
 })
 export class DatabaseModule {}
